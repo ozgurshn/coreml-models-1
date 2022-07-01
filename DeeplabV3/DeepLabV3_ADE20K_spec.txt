@@ -1,0 +1,3690 @@
+specificationVersion: 4
+description {
+  input {
+    name: "ImageTensor"
+    type {
+      imageType {
+        width: 513
+        height: 513
+        colorSpace: RGB
+      }
+    }
+  }
+  output {
+    name: "ResizeBilinear_2"
+    type {
+      multiArrayType {
+        dataType: FLOAT32
+      }
+    }
+  }
+  metadata {
+    userDefined {
+      key: "com.github.apple.coremltools.source"
+      value: "tensorflow==1.15.2"
+    }
+    userDefined {
+      key: "com.github.apple.coremltools.version"
+      value: "4.1"
+    }
+  }
+}
+neuralNetwork {
+  layers {
+    name: "ImageTensor__transpose_from_nchw__"
+    input: "ImageTensor"
+    output: "ImageTensor__transpose_from_nchw__"
+    transpose {
+      axes: 0
+      axes: 2
+      axes: 3
+      axes: 1
+    }
+  }
+  layers {
+    name: "Squeeze"
+    input: "ImageTensor__transpose_from_nchw__"
+    output: "Squeeze"
+    squeeze {
+      axes: 0
+    }
+  }
+  layers {
+    name: "Cast"
+    input: "Squeeze"
+    output: "Cast"
+    activation {
+      linear {
+        alpha: 1.0
+      }
+    }
+  }
+  layers {
+    name: "Reshape"
+    output: "Reshape"
+    loadConstantND {
+      shape: 1
+      shape: 1
+      shape: 3
+      data {
+      }
+    }
+  }
+  layers {
+    name: "sub_2"
+    input: "Cast"
+    input: "Reshape"
+    output: "sub_2"
+    subtractBroadcastable {
+    }
+  }
+  layers {
+    name: "add_2"
+    input: "sub_2"
+    input: "Reshape"
+    output: "add_2"
+    addBroadcastable {
+    }
+  }
+  layers {
+    name: "ExpandDims"
+    input: "add_2"
+    output: "ExpandDims"
+    expandDims {
+      axes: 0
+    }
+  }
+  layers {
+    name: "mul"
+    input: "ExpandDims"
+    output: "mul"
+    multiply {
+      alpha: 0.007843137718737125
+    }
+  }
+  layers {
+    name: "sub_7/y"
+    output: "sub_7/y"
+    loadConstantND {
+      shape: 1
+      data {
+      }
+    }
+  }
+  layers {
+    name: "_neg_y_sub_7"
+    input: "sub_7/y"
+    output: "_neg_y_sub_7"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "sub_7"
+    input: "mul"
+    input: "_neg_y_sub_7"
+    output: "sub_7"
+    add {
+    }
+  }
+  layers {
+    name: "transpose_1"
+    input: "sub_7"
+    output: "transpose_1"
+    transpose {
+      axes: 0
+      axes: 3
+      axes: 1
+      axes: 2
+    }
+  }
+  layers {
+    name: "MobilenetV2/Conv/Conv2Dx"
+    input: "transpose_1"
+    output: "batch_norm_0"
+    convolution {
+      outputChannels: 32
+      kernelChannels: 3
+      nGroups: 1
+      kernelSize: 3
+      kernelSize: 3
+      stride: 2
+      stride: 2
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/Conv/Relu6__relu6_relu__"
+    input: "batch_norm_0"
+    output: "MobilenetV2/Conv/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/Conv/Relu6__relu6_neg__"
+    input: "MobilenetV2/Conv/Relu6__relu6_relu__"
+    output: "MobilenetV2/Conv/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/Conv/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/Conv/Relu6__relu6_neg__"
+    output: "MobilenetV2/Conv/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/Conv/Relu6"
+    input: "MobilenetV2/Conv/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/Conv/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv/depthwise/depthwisex"
+    input: "MobilenetV2/Conv/Relu6"
+    output: "batch_norm_1"
+    convolution {
+      outputChannels: 32
+      kernelChannels: 1
+      nGroups: 32
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_1"
+    output: "MobilenetV2/expanded_conv/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv/depthwise/Relu6"
+    output: "batch_norm_2"
+    convolution {
+      outputChannels: 16
+      kernelChannels: 32
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_1/expand/Conv2Dx"
+    input: "batch_norm_2"
+    output: "batch_norm_3"
+    convolution {
+      outputChannels: 96
+      kernelChannels: 16
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_1/expand/Relu6__relu6_relu__"
+    input: "batch_norm_3"
+    output: "MobilenetV2/expanded_conv_1/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_1/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_1/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_1/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_1/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_1/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_1/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_1/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_1/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_1/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_1/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_1/expand/Relu6"
+    output: "batch_norm_4"
+    convolution {
+      outputChannels: 96
+      kernelChannels: 1
+      nGroups: 96
+      kernelSize: 3
+      kernelSize: 3
+      stride: 2
+      stride: 2
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_1/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_4"
+    output: "MobilenetV2/expanded_conv_1/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_1/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_1/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_1/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_1/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_1/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_1/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_1/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_1/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_1/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_1/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_1/depthwise/Relu6"
+    output: "batch_norm_5"
+    convolution {
+      outputChannels: 24
+      kernelChannels: 96
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_2/expand/Conv2Dx"
+    input: "batch_norm_5"
+    output: "batch_norm_6"
+    convolution {
+      outputChannels: 144
+      kernelChannels: 24
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_2/expand/Relu6__relu6_relu__"
+    input: "batch_norm_6"
+    output: "MobilenetV2/expanded_conv_2/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_2/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_2/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_2/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_2/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_2/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_2/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_2/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_2/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_2/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_2/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_2/expand/Relu6"
+    output: "batch_norm_7"
+    convolution {
+      outputChannels: 144
+      kernelChannels: 1
+      nGroups: 144
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_2/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_7"
+    output: "MobilenetV2/expanded_conv_2/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_2/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_2/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_2/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_2/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_2/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_2/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_2/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_2/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_2/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_2/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_2/depthwise/Relu6"
+    output: "batch_norm_8"
+    convolution {
+      outputChannels: 24
+      kernelChannels: 144
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "decoder/feature_projection0/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_2/depthwise/Relu6"
+    output: "batch_norm_9"
+    convolution {
+      outputChannels: 48
+      kernelChannels: 144
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "decoder/feature_projection0/Relu"
+    input: "batch_norm_9"
+    output: "decoder/feature_projection0/Relu"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_2/add"
+    input: "batch_norm_5"
+    input: "batch_norm_8"
+    output: "MobilenetV2/expanded_conv_2/add"
+    add {
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_3/expand/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_2/add"
+    output: "batch_norm_10"
+    convolution {
+      outputChannels: 144
+      kernelChannels: 24
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_3/expand/Relu6__relu6_relu__"
+    input: "batch_norm_10"
+    output: "MobilenetV2/expanded_conv_3/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_3/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_3/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_3/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_3/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_3/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_3/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_3/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_3/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_3/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_3/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_3/expand/Relu6"
+    output: "batch_norm_11"
+    convolution {
+      outputChannels: 144
+      kernelChannels: 1
+      nGroups: 144
+      kernelSize: 3
+      kernelSize: 3
+      stride: 2
+      stride: 2
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_3/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_11"
+    output: "MobilenetV2/expanded_conv_3/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_3/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_3/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_3/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_3/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_3/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_3/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_3/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_3/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_3/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_3/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_3/depthwise/Relu6"
+    output: "batch_norm_12"
+    convolution {
+      outputChannels: 32
+      kernelChannels: 144
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_4/expand/Conv2Dx"
+    input: "batch_norm_12"
+    output: "batch_norm_13"
+    convolution {
+      outputChannels: 192
+      kernelChannels: 32
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_4/expand/Relu6__relu6_relu__"
+    input: "batch_norm_13"
+    output: "MobilenetV2/expanded_conv_4/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_4/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_4/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_4/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_4/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_4/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_4/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_4/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_4/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_4/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_4/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_4/expand/Relu6"
+    output: "batch_norm_14"
+    convolution {
+      outputChannels: 192
+      kernelChannels: 1
+      nGroups: 192
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_4/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_14"
+    output: "MobilenetV2/expanded_conv_4/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_4/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_4/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_4/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_4/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_4/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_4/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_4/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_4/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_4/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_4/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_4/depthwise/Relu6"
+    output: "batch_norm_15"
+    convolution {
+      outputChannels: 32
+      kernelChannels: 192
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_4/add"
+    input: "batch_norm_12"
+    input: "batch_norm_15"
+    output: "MobilenetV2/expanded_conv_4/add"
+    add {
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_5/expand/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_4/add"
+    output: "batch_norm_16"
+    convolution {
+      outputChannels: 192
+      kernelChannels: 32
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_5/expand/Relu6__relu6_relu__"
+    input: "batch_norm_16"
+    output: "MobilenetV2/expanded_conv_5/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_5/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_5/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_5/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_5/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_5/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_5/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_5/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_5/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_5/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_5/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_5/expand/Relu6"
+    output: "batch_norm_17"
+    convolution {
+      outputChannels: 192
+      kernelChannels: 1
+      nGroups: 192
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_5/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_17"
+    output: "MobilenetV2/expanded_conv_5/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_5/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_5/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_5/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_5/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_5/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_5/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_5/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_5/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_5/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_5/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_5/depthwise/Relu6"
+    output: "batch_norm_18"
+    convolution {
+      outputChannels: 32
+      kernelChannels: 192
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_5/add"
+    input: "MobilenetV2/expanded_conv_4/add"
+    input: "batch_norm_18"
+    output: "MobilenetV2/expanded_conv_5/add"
+    add {
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_6/expand/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_5/add"
+    output: "batch_norm_19"
+    convolution {
+      outputChannels: 192
+      kernelChannels: 32
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_6/expand/Relu6__relu6_relu__"
+    input: "batch_norm_19"
+    output: "MobilenetV2/expanded_conv_6/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_6/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_6/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_6/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_6/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_6/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_6/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_6/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_6/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_6/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_6/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_6/expand/Relu6"
+    output: "batch_norm_20"
+    convolution {
+      outputChannels: 192
+      kernelChannels: 1
+      nGroups: 192
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_6/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_20"
+    output: "MobilenetV2/expanded_conv_6/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_6/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_6/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_6/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_6/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_6/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_6/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_6/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_6/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_6/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_6/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_6/depthwise/Relu6"
+    output: "batch_norm_21"
+    convolution {
+      outputChannels: 64
+      kernelChannels: 192
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_7/expand/Conv2Dx"
+    input: "batch_norm_21"
+    output: "batch_norm_22"
+    convolution {
+      outputChannels: 384
+      kernelChannels: 64
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_7/expand/Relu6__relu6_relu__"
+    input: "batch_norm_22"
+    output: "MobilenetV2/expanded_conv_7/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_7/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_7/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_7/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_7/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_7/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_7/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_7/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_7/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_7/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_7/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_7/expand/Relu6"
+    output: "batch_norm_23"
+    convolution {
+      outputChannels: 384
+      kernelChannels: 1
+      nGroups: 384
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 2
+      dilationFactor: 2
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_7/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_23"
+    output: "MobilenetV2/expanded_conv_7/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_7/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_7/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_7/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_7/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_7/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_7/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_7/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_7/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_7/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_7/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_7/depthwise/Relu6"
+    output: "batch_norm_24"
+    convolution {
+      outputChannels: 64
+      kernelChannels: 384
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_7/add"
+    input: "batch_norm_21"
+    input: "batch_norm_24"
+    output: "MobilenetV2/expanded_conv_7/add"
+    add {
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_8/expand/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_7/add"
+    output: "batch_norm_25"
+    convolution {
+      outputChannels: 384
+      kernelChannels: 64
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_8/expand/Relu6__relu6_relu__"
+    input: "batch_norm_25"
+    output: "MobilenetV2/expanded_conv_8/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_8/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_8/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_8/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_8/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_8/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_8/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_8/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_8/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_8/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_8/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_8/expand/Relu6"
+    output: "batch_norm_26"
+    convolution {
+      outputChannels: 384
+      kernelChannels: 1
+      nGroups: 384
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 2
+      dilationFactor: 2
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_8/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_26"
+    output: "MobilenetV2/expanded_conv_8/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_8/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_8/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_8/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_8/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_8/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_8/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_8/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_8/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_8/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_8/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_8/depthwise/Relu6"
+    output: "batch_norm_27"
+    convolution {
+      outputChannels: 64
+      kernelChannels: 384
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_8/add"
+    input: "MobilenetV2/expanded_conv_7/add"
+    input: "batch_norm_27"
+    output: "MobilenetV2/expanded_conv_8/add"
+    add {
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_9/expand/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_8/add"
+    output: "batch_norm_28"
+    convolution {
+      outputChannels: 384
+      kernelChannels: 64
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_9/expand/Relu6__relu6_relu__"
+    input: "batch_norm_28"
+    output: "MobilenetV2/expanded_conv_9/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_9/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_9/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_9/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_9/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_9/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_9/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_9/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_9/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_9/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_9/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_9/expand/Relu6"
+    output: "batch_norm_29"
+    convolution {
+      outputChannels: 384
+      kernelChannels: 1
+      nGroups: 384
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 2
+      dilationFactor: 2
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_9/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_29"
+    output: "MobilenetV2/expanded_conv_9/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_9/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_9/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_9/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_9/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_9/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_9/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_9/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_9/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_9/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_9/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_9/depthwise/Relu6"
+    output: "batch_norm_30"
+    convolution {
+      outputChannels: 64
+      kernelChannels: 384
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_9/add"
+    input: "MobilenetV2/expanded_conv_8/add"
+    input: "batch_norm_30"
+    output: "MobilenetV2/expanded_conv_9/add"
+    add {
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_10/expand/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_9/add"
+    output: "batch_norm_31"
+    convolution {
+      outputChannels: 384
+      kernelChannels: 64
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_10/expand/Relu6__relu6_relu__"
+    input: "batch_norm_31"
+    output: "MobilenetV2/expanded_conv_10/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_10/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_10/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_10/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_10/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_10/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_10/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_10/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_10/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_10/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_10/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_10/expand/Relu6"
+    output: "batch_norm_32"
+    convolution {
+      outputChannels: 384
+      kernelChannels: 1
+      nGroups: 384
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 2
+      dilationFactor: 2
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_10/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_32"
+    output: "MobilenetV2/expanded_conv_10/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_10/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_10/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_10/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_10/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_10/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_10/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_10/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_10/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_10/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_10/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_10/depthwise/Relu6"
+    output: "batch_norm_33"
+    convolution {
+      outputChannels: 96
+      kernelChannels: 384
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_11/expand/Conv2Dx"
+    input: "batch_norm_33"
+    output: "batch_norm_34"
+    convolution {
+      outputChannels: 576
+      kernelChannels: 96
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_11/expand/Relu6__relu6_relu__"
+    input: "batch_norm_34"
+    output: "MobilenetV2/expanded_conv_11/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_11/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_11/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_11/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_11/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_11/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_11/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_11/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_11/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_11/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_11/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_11/expand/Relu6"
+    output: "batch_norm_35"
+    convolution {
+      outputChannels: 576
+      kernelChannels: 1
+      nGroups: 576
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 2
+      dilationFactor: 2
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_11/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_35"
+    output: "MobilenetV2/expanded_conv_11/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_11/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_11/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_11/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_11/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_11/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_11/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_11/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_11/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_11/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_11/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_11/depthwise/Relu6"
+    output: "batch_norm_36"
+    convolution {
+      outputChannels: 96
+      kernelChannels: 576
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_11/add"
+    input: "batch_norm_33"
+    input: "batch_norm_36"
+    output: "MobilenetV2/expanded_conv_11/add"
+    add {
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_12/expand/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_11/add"
+    output: "batch_norm_37"
+    convolution {
+      outputChannels: 576
+      kernelChannels: 96
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_12/expand/Relu6__relu6_relu__"
+    input: "batch_norm_37"
+    output: "MobilenetV2/expanded_conv_12/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_12/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_12/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_12/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_12/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_12/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_12/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_12/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_12/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_12/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_12/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_12/expand/Relu6"
+    output: "batch_norm_38"
+    convolution {
+      outputChannels: 576
+      kernelChannels: 1
+      nGroups: 576
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 2
+      dilationFactor: 2
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_12/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_38"
+    output: "MobilenetV2/expanded_conv_12/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_12/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_12/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_12/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_12/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_12/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_12/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_12/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_12/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_12/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_12/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_12/depthwise/Relu6"
+    output: "batch_norm_39"
+    convolution {
+      outputChannels: 96
+      kernelChannels: 576
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_12/add"
+    input: "MobilenetV2/expanded_conv_11/add"
+    input: "batch_norm_39"
+    output: "MobilenetV2/expanded_conv_12/add"
+    add {
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_13/expand/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_12/add"
+    output: "batch_norm_40"
+    convolution {
+      outputChannels: 576
+      kernelChannels: 96
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_13/expand/Relu6__relu6_relu__"
+    input: "batch_norm_40"
+    output: "MobilenetV2/expanded_conv_13/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_13/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_13/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_13/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_13/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_13/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_13/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_13/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_13/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_13/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_13/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_13/expand/Relu6"
+    output: "batch_norm_41"
+    convolution {
+      outputChannels: 576
+      kernelChannels: 1
+      nGroups: 576
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 2
+      dilationFactor: 2
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_13/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_41"
+    output: "MobilenetV2/expanded_conv_13/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_13/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_13/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_13/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_13/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_13/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_13/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_13/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_13/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_13/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_13/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_13/depthwise/Relu6"
+    output: "batch_norm_42"
+    convolution {
+      outputChannels: 160
+      kernelChannels: 576
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_14/expand/Conv2Dx"
+    input: "batch_norm_42"
+    output: "batch_norm_43"
+    convolution {
+      outputChannels: 960
+      kernelChannels: 160
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_14/expand/Relu6__relu6_relu__"
+    input: "batch_norm_43"
+    output: "MobilenetV2/expanded_conv_14/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_14/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_14/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_14/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_14/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_14/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_14/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_14/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_14/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_14/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_14/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_14/expand/Relu6"
+    output: "batch_norm_44"
+    convolution {
+      outputChannels: 960
+      kernelChannels: 1
+      nGroups: 960
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 4
+      dilationFactor: 4
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_14/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_44"
+    output: "MobilenetV2/expanded_conv_14/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_14/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_14/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_14/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_14/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_14/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_14/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_14/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_14/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_14/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_14/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_14/depthwise/Relu6"
+    output: "batch_norm_45"
+    convolution {
+      outputChannels: 160
+      kernelChannels: 960
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_14/add"
+    input: "batch_norm_42"
+    input: "batch_norm_45"
+    output: "MobilenetV2/expanded_conv_14/add"
+    add {
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_15/expand/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_14/add"
+    output: "batch_norm_46"
+    convolution {
+      outputChannels: 960
+      kernelChannels: 160
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_15/expand/Relu6__relu6_relu__"
+    input: "batch_norm_46"
+    output: "MobilenetV2/expanded_conv_15/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_15/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_15/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_15/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_15/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_15/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_15/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_15/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_15/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_15/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_15/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_15/expand/Relu6"
+    output: "batch_norm_47"
+    convolution {
+      outputChannels: 960
+      kernelChannels: 1
+      nGroups: 960
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 4
+      dilationFactor: 4
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_15/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_47"
+    output: "MobilenetV2/expanded_conv_15/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_15/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_15/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_15/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_15/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_15/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_15/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_15/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_15/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_15/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_15/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_15/depthwise/Relu6"
+    output: "batch_norm_48"
+    convolution {
+      outputChannels: 160
+      kernelChannels: 960
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_15/add"
+    input: "MobilenetV2/expanded_conv_14/add"
+    input: "batch_norm_48"
+    output: "MobilenetV2/expanded_conv_15/add"
+    add {
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_16/expand/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_15/add"
+    output: "batch_norm_49"
+    convolution {
+      outputChannels: 960
+      kernelChannels: 160
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_16/expand/Relu6__relu6_relu__"
+    input: "batch_norm_49"
+    output: "MobilenetV2/expanded_conv_16/expand/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_16/expand/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_16/expand/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_16/expand/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_16/expand/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_16/expand/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_16/expand/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_16/expand/Relu6"
+    input: "MobilenetV2/expanded_conv_16/expand/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_16/expand/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_16/depthwise/depthwisex"
+    input: "MobilenetV2/expanded_conv_16/expand/Relu6"
+    output: "batch_norm_50"
+    convolution {
+      outputChannels: 960
+      kernelChannels: 1
+      nGroups: 960
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 4
+      dilationFactor: 4
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_16/depthwise/Relu6__relu6_relu__"
+    input: "batch_norm_50"
+    output: "MobilenetV2/expanded_conv_16/depthwise/Relu6__relu6_relu__"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_16/depthwise/Relu6__relu6_neg__"
+    input: "MobilenetV2/expanded_conv_16/depthwise/Relu6__relu6_relu__"
+    output: "MobilenetV2/expanded_conv_16/depthwise/Relu6__relu6_neg__"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_16/depthwise/Relu6__relu6_threshold6__"
+    input: "MobilenetV2/expanded_conv_16/depthwise/Relu6__relu6_neg__"
+    output: "MobilenetV2/expanded_conv_16/depthwise/Relu6__relu6_threshold6__"
+    unary {
+      type: THRESHOLD
+      alpha: -6.0
+      epsilon: 9.999999974752427e-07
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_16/depthwise/Relu6"
+    input: "MobilenetV2/expanded_conv_16/depthwise/Relu6__relu6_threshold6__"
+    output: "MobilenetV2/expanded_conv_16/depthwise/Relu6"
+    activation {
+      linear {
+        alpha: -1.0
+      }
+    }
+  }
+  layers {
+    name: "MobilenetV2/expanded_conv_16/project/Conv2Dx"
+    input: "MobilenetV2/expanded_conv_16/depthwise/Relu6"
+    output: "batch_norm_51"
+    convolution {
+      outputChannels: 320
+      kernelChannels: 960
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "avg_pool_0"
+    input: "batch_norm_51"
+    output: "avg_pool_0"
+    pooling {
+      type: AVERAGE
+      kernelSize: 65
+      kernelSize: 65
+      stride: 1
+      stride: 1
+      valid {
+        paddingAmounts {
+          borderAmounts {
+          }
+          borderAmounts {
+          }
+        }
+      }
+      avgPoolExcludePadding: true
+    }
+  }
+  layers {
+    name: "aspp0/Conv2Dx"
+    input: "batch_norm_51"
+    output: "batch_norm_52"
+    convolution {
+      outputChannels: 256
+      kernelChannels: 320
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "image_pooling/Conv2Dx"
+    input: "avg_pool_0"
+    output: "batch_norm_53"
+    convolution {
+      outputChannels: 256
+      kernelChannels: 320
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "aspp0/Relu"
+    input: "batch_norm_52"
+    output: "aspp0/Relu"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "image_pooling/Relu"
+    input: "batch_norm_53"
+    output: "image_pooling/Relu"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "ResizeBilinear_channel_first_resize_bilinear"
+    input: "image_pooling/Relu"
+    output: "ResizeBilinear_channel_first_resize_bilinear"
+    resizeBilinear {
+      targetSize: 65
+      targetSize: 65
+      mode {
+      }
+    }
+  }
+  layers {
+    name: "concat"
+    input: "ResizeBilinear_channel_first_resize_bilinear"
+    input: "aspp0/Relu"
+    output: "concat"
+    concat {
+    }
+  }
+  layers {
+    name: "concat_projection/Conv2Dx"
+    input: "concat"
+    output: "batch_norm_54"
+    convolution {
+      outputChannels: 256
+      kernelChannels: 512
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "concat_projection/Relu"
+    input: "batch_norm_54"
+    output: "concat_projection/Relu"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "decoder/ResizeBilinear_channel_first_resize_bilinear"
+    input: "concat_projection/Relu"
+    output: "decoder/ResizeBilinear_channel_first_resize_bilinear"
+    resizeBilinear {
+      targetSize: 129
+      targetSize: 129
+      mode {
+      }
+    }
+  }
+  layers {
+    name: "decoder/concat"
+    input: "decoder/ResizeBilinear_channel_first_resize_bilinear"
+    input: "decoder/feature_projection0/Relu"
+    output: "decoder/concat"
+    concat {
+    }
+  }
+  layers {
+    name: "decoder/decoder_conv0_depthwise/depthwisex"
+    input: "decoder/concat"
+    output: "batch_norm_55"
+    convolution {
+      outputChannels: 304
+      kernelChannels: 1
+      nGroups: 304
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "decoder/decoder_conv0_depthwise/Relu"
+    input: "batch_norm_55"
+    output: "decoder/decoder_conv0_depthwise/Relu"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "decoder/decoder_conv0_pointwise/Conv2Dx"
+    input: "decoder/decoder_conv0_depthwise/Relu"
+    output: "batch_norm_56"
+    convolution {
+      outputChannels: 256
+      kernelChannels: 304
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "decoder/decoder_conv0_pointwise/Relu"
+    input: "batch_norm_56"
+    output: "decoder/decoder_conv0_pointwise/Relu"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "decoder/decoder_conv1_depthwise/depthwisex"
+    input: "decoder/decoder_conv0_pointwise/Relu"
+    output: "batch_norm_57"
+    convolution {
+      outputChannels: 256
+      kernelChannels: 1
+      nGroups: 256
+      kernelSize: 3
+      kernelSize: 3
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "decoder/decoder_conv1_depthwise/Relu"
+    input: "batch_norm_57"
+    output: "decoder/decoder_conv1_depthwise/Relu"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "decoder/decoder_conv1_pointwise/Conv2Dx"
+    input: "decoder/decoder_conv1_depthwise/Relu"
+    output: "batch_norm_58"
+    convolution {
+      outputChannels: 256
+      kernelChannels: 256
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "decoder/decoder_conv1_pointwise/Relu"
+    input: "batch_norm_58"
+    output: "decoder/decoder_conv1_pointwise/Relu"
+    activation {
+      ReLU {
+      }
+    }
+  }
+  layers {
+    name: "logits/semantic/BiasAdd"
+    input: "decoder/decoder_conv1_pointwise/Relu"
+    output: "logits/semantic/BiasAdd"
+    convolution {
+      outputChannels: 151
+      kernelChannels: 256
+      nGroups: 1
+      kernelSize: 1
+      kernelSize: 1
+      stride: 1
+      stride: 1
+      dilationFactor: 1
+      dilationFactor: 1
+      same {
+      }
+      hasBias: true
+      weights {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+      bias {
+        quantization {
+          numberOfBits: 8
+          linearQuantization {
+          }
+        }
+      }
+    }
+  }
+  layers {
+    name: "ResizeBilinear_2_channel_first_resize_bilinear"
+    input: "logits/semantic/BiasAdd"
+    output: "ResizeBilinear_2_channel_first_resize_bilinear"
+    resizeBilinear {
+      targetSize: 513
+      targetSize: 513
+      mode {
+      }
+    }
+  }
+  layers {
+    name: "ResizeBilinear_2"
+    input: "ResizeBilinear_2_channel_first_resize_bilinear"
+    output: "ResizeBilinear_2"
+    transpose {
+      axes: 0
+      axes: 2
+      axes: 3
+      axes: 1
+    }
+  }
+  preprocessing {
+    featureName: "ImageTensor"
+    scaler {
+      channelScale: 1.0
+    }
+  }
+  arrayInputShapeMapping: EXACT_ARRAY_MAPPING
+  imageInputShapeMapping: RANK4_IMAGE_MAPPING
+}
